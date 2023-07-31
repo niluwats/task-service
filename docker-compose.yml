@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  task-service:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - 50052:50052
+    environment:
+      - PORT=${GRPC_PORT}
+    
