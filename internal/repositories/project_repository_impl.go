@@ -50,7 +50,10 @@ func (repo ProjectRepoDb) Update(ctx context.Context, ID string, project domain.
 	obID, _ := primitive.ObjectIDFromHex(ID)
 	var updatedDoc domain.Project
 
-	if err := repo.dbCollection.FindOneAndUpdate(ctx, bson.D{{Key: "_id", Value: obID}}, bson.D{{Key: "$set", Value: project}}, options.FindOneAndUpdate().SetReturnDocument(1)).Decode(&updatedDoc); err != nil {
+	filter := bson.D{{Key: "_id", Value: obID}}
+	update := bson.D{{Key: "$set", Value: project}}
+
+	if err := repo.dbCollection.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(1)).Decode(&updatedDoc); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("ID doesn't exists")
 		}
@@ -75,6 +78,7 @@ func (repo ProjectRepoDb) Delete(ctx context.Context, ID string) error {
 
 func (repo ProjectRepoDb) FindByID(ctx context.Context, ID string) (*domain.Project, error) {
 	obID, _ := primitive.ObjectIDFromHex(ID)
+
 	var project domain.Project
 
 	err := repo.dbCollection.FindOne(ctx, bson.M{"_id": obID}).Decode(&project)
