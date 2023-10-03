@@ -4,9 +4,28 @@ services:
   task-service:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     ports:
       - 50052:50052
     environment:
-      - PORT=${GRPC_PORT}
+      PORT: ${GRPC_PORT}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_USERNAME: root
+      MONGO_PASSWORD: password
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: logs  
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./db-data/mongo/:/data/db
+    
+    
+
     

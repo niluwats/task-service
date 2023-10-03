@@ -6,6 +6,7 @@ import (
 	"github.com/niluwats/task-service/internal/domain"
 )
 
+//go:generate mockery --name ProjectRepoMock
 type ProjectRepository interface {
 	Insert(ctx context.Context, project domain.Project) (*domain.Project, error)
 	Update(ctx context.Context, ID string, project domain.Project) (*domain.Project, error)

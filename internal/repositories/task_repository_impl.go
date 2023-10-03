@@ -79,7 +79,7 @@ func (repo TaskRepoDb) Delete(ctx context.Context, projectID, taskID string) err
 	}
 
 	if err != nil {
-		return err
+		return err 
 	}
 	return nil
 }
