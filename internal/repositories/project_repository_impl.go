@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/niluwats/task-service/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -45,7 +44,7 @@ func (repo ProjectRepoImpl) Update(ctx context.Context, ID string, project domai
 			{Key: "description", Value: project.Description},
 			{Key: "creator", Value: project.Creator},
 			{Key: "assignees", Value: project.Assignees},
-			{Key: "updated_at", Value: time.Now()},
+			{Key: "updated_at", Value: project.UpdatedAt},
 			{Key: "tasks", Value: project.Tasks},
 		}}}
 
