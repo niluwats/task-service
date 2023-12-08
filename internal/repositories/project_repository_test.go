@@ -21,7 +21,7 @@ func TestInsert(t *testing.T) {
 		id := primitive.NewObjectID()
 		mt.AddMockResponses(mtest.CreateSuccessResponse())
 
-		assignees := make([]uint, 0)
+		assignees := make([]int32, 0)
 		assignees = append(assignees, 2)
 		assignees = append(assignees, 3)
 

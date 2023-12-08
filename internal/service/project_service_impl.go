@@ -4,8 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/niluwats/task-service/api/pb"
 	"github.com/niluwats/task-service/internal/domain"
 	"github.com/niluwats/task-service/internal/repositories"
+	"google.golang.org/grpc/codes"
 )
 
 type ProjectServiceImpl struct {
@@ -16,7 +18,7 @@ func NewProjectServiceImpl(repo repositories.ProjectRepository) ProjectServiceIm
 	return ProjectServiceImpl{repo}
 }
 
-func (serv ProjectServiceImpl) Create(ctx context.Context, project domain.Project) (*domain.Project, error) {
+func (serv ProjectServiceImpl) Create(ctx context.Context, project domain.Project) (*pb.ProjectResponse, error) {
 	project.CreatedAt = time.Now()
 	project.UpdatedAt = time.Now()
 
@@ -24,10 +26,11 @@ func (serv ProjectServiceImpl) Create(ctx context.Context, project domain.Projec
 	if err != nil {
 		return nil, err
 	}
-	return createdProject, nil
+
+	return convertToPbProject(createdProject), nil
 }
 
-func (serv ProjectServiceImpl) Update(ctx context.Context, project domain.Project) (*domain.Project, error) {
+func (serv ProjectServiceImpl) Update(ctx context.Context, project domain.Project) (*pb.ProjectResponse, error) {
 	project.UpdatedAt = time.Now()
 
 	updatedProject, err := serv.repo.Update(ctx, project.ID.String(), project)
@@ -35,25 +38,25 @@ func (serv ProjectServiceImpl) Update(ctx context.Context, project domain.Projec
 		return nil, err
 	}
 
-	return updatedProject, nil
+	return convertToPbProject(updatedProject), nil
 }
 
-func (serv ProjectServiceImpl) ViewByID(ctx context.Context, projectID string) (*domain.Project, error) {
+func (serv ProjectServiceImpl) ViewByID(ctx context.Context, projectID string) (*pb.ProjectResponse, error) {
 	project, err := serv.repo.FindByID(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
 
-	return project, nil
+	return convertToPbProject(project), nil
 }
 
-func (serv ProjectServiceImpl) ViewAll(ctx context.Context) ([]domain.Project, error) {
+func (serv ProjectServiceImpl) ViewAll(ctx context.Context) (*pb.ProjectsResponse, error) {
 	projects, err := serv.repo.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return projects, nil
+	return convertToPbProjects(projects), nil
 }
 
 func (serv ProjectServiceImpl) Remove(ctx context.Context, projectId string) error {
@@ -61,6 +64,59 @@ func (serv ProjectServiceImpl) Remove(ctx context.Context, projectId string) err
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func convertToPbProject(project *domain.Project) *pb.ProjectResponse {
+	return &pb.ProjectResponse{
+		Project: &pb.Project{
+			Id:          project.ID.String(),
+			Name:        project.Name,
+			Description: project.Description,
+			Creator:     project.Creator,
+			CreatedOn:   project.CreatedAt.String(),
+			UpdatedOn:   project.UpdatedAt.String(),
+			Assignees:   project.Assignees,
+			Tasks:       convertTaskArray(project.Tasks),
+		},
+	}
+}
+
+func convertToPbProjects(projects []domain.Project) *pb.ProjectsResponse {
+	pbProjects := make([]*pb.Project, 0)
+	for _, v := range projects {
+		project := pb.Project{
+			Id:          v.ID.String(),
+			Name:        v.Name,
+			Description: v.Description,
+			Creator:     v.Creator,
+			Assignees:   v.Assignees,
+			CreatedOn:   v.CreatedAt.String(),
+			UpdatedOn:   v.UpdatedAt.String(),
+			Tasks:       convertTaskArray(v.Tasks),
+		}
+		pbProjects = append(pbProjects, &project)
+	}
+	return &pb.ProjectsResponse{
+		Projects: pbProjects,
+		CommonResponse: &pb.CommonResponse{
+			Status:  int32(codes.OK),
+			Message: "success",
+		},
+	}
+}
+
+func convertTaskArray(task []domain.Task) []*pb.Task {
+	newTasks := make([]*pb.Task, 0)
+	for _, v := range task {
+		newTask := pb.Task{
+			Id:          v.ID.String(),
+			Description: v.Description,
+			Creator:     v.Creator,
+			Assignee:    v.Assignee,
+			TaskStatus:  pb.Status(v.TaskStatus),
+		}
+		newTasks = append(newTasks, &newTask)
+	}
+	return newTasks
 }

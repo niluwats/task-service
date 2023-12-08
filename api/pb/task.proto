@@ -1,0 +1,84 @@
+syntax="proto3";
+
+package auth;
+
+option go_package="./pkg/task/pb";
+
+message CommonResponse{
+    int32 status=9;
+    string message=10;
+}
+
+message NewProjectRequest{
+    string name=1;
+    string description=2;
+    int32 creator=3;
+    repeated int32 assignees=4;
+}
+
+message UpdaterojectRequest{
+    string id=1;
+    string name=2;
+    string description=3;
+    int32 creator=4;
+    repeated int32 assignees=5;
+}
+
+message Task{
+   string id=1;
+   string description=2;
+   int32 creator=3;
+   int32 assignee=4;
+   Status task_status=5;
+}
+
+enum Status{
+    TODO=0;
+	INPROGRESS=1;
+	READY=2;
+	COMPLETED=3;
+}
+
+message Project{
+    string id=1;
+    string name=2;
+    string description=3;
+    int32 creator=4;
+    string created_on=5;
+    string updated_on=6;
+    repeated int32 assignees=7;
+    repeated Task tasks=8;
+}
+
+message ProjectResponse{
+    Project project=1;
+    CommonResponse common_response=2;
+}
+
+message ProjectsResponse{
+    repeated Project projects=1;
+    CommonResponse common_response=2;
+}
+
+message ViewProjectRequest{
+    string id=1;
+}
+
+message RemovedProjectResponse{
+    CommonResponse common_response=1;
+}
+
+message EmptyParams{}
+
+service TaskService{
+    rpc CreateProject(NewProjectRequest)returns (ProjectResponse);
+    rpc UpdateProject(UpdaterojectRequest) returns (ProjectResponse);
+    rpc ViewProject(ViewProjectRequest)returns (ProjectResponse);
+    rpc ViewAllProjects(EmptyParams) returns(ProjectsResponse);
+    rpc Remove(ViewProjectRequest)returns (RemovedProjectResponse);
+}
+
+
+
+
+

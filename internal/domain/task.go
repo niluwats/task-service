@@ -18,8 +18,8 @@ const (
 type Task struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty"`
 	Description string             `bson:"description,omitempty"`
-	Creator     string             `bson:"creator,omitempty"`
-	Assignee    string             `bson:"assignee,omitempty"`
+	Creator     int32              `bson:"creator,omitempty"`
+	Assignee    int32              `bson:"assignee,omitempty"`
 	CreatedAt   time.Time          `bson:"created_at,omitempty"`
 	UpdatedAt   time.Time          `bson:"updated_at,omitempty"`
 	CompletedAt time.Time          `bson:"completed_at,omitempty"`

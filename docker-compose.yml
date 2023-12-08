@@ -26,6 +26,7 @@ services:
     volumes:
       - ./db-data/mongo/:/data/db
     
-    
-
-    
+networks:
+  default:
+    name: grpc-external
+    external: true  

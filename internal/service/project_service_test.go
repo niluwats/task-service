@@ -20,7 +20,7 @@ func TestCreate(t *testing.T) {
 		Description: "this is the project1",
 		Creator:     1,
 		Tasks:       make([]domain.Task, 0),
-		Assignees:   make([]uint, 0),
+		Assignees:   make([]int32, 0),
 	}
 
 	project := domain.Project{
@@ -28,7 +28,7 @@ func TestCreate(t *testing.T) {
 		Description: "this is the project1",
 		Creator:     1,
 		Tasks:       make([]domain.Task, 0),
-		Assignees:   make([]uint, 0),
+		Assignees:   make([]int32, 0),
 	}
 
 	repo.On("Insert", mock.Anything, mock.AnythingOfType("domain.Project")).Return(&expectedProject, nil).Once()
